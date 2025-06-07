@@ -1,0 +1,23 @@
+version: '3.8'
+services:
+  localstack:
+    image: localstack/localstack:latest
+    container_name: localstack
+    ports:
+      - "4566:4566"
+      - "4571:4571"
+    environment:
+      - AWS_DEFAULT_REGION=sa-east-1
+      - AWS_ACCESS_KEY_ID=test
+      - AWS_SECRET_ACCESS_KEY=test
+      - SERVICES=apigateway,sqs,s3,sts,iam
+      - DATA_DIR=${DATA_DIR-}
+      - HOST_TMP_FOLDER=${TMPDIR:-/tmp/}localstack
+      - DEBUG=1
+      - DOCKER_HOST=unix:///var/run/docker.sock
+    volumes:
+      - "/var/run/docker.sock:/var/run/docker.sock"
+
+networks:
+  kafka-network:
+    driver: bridge
