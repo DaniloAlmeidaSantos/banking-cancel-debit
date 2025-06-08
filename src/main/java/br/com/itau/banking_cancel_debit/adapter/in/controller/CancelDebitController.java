@@ -1,25 +1,24 @@
 package br.com.itau.banking_cancel_debit.adapter.in.controller;
 
-import br.com.itau.banking_cancel_debit.application.mapper.CancelDebitMapper;
-import br.com.itau.banking_cancel_debit.application.usecases.CancelDebitUseCase;
-import br.com.itau.banking_cancel_debit.adapter.in.controller.dto.DebitCancellationDTO;
-import lombok.RequiredArgsConstructor;
+import br.com.itau.banking_cancel_debit.common.dto.DebitCancellationDTO;
+import br.com.itau.banking_cancel_debit.domain.port.in.DebitServicePort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("/debits")
-@RequiredArgsConstructor
+@RequestMapping("debit")
 public class CancelDebitController {
+    
+    private final DebitServicePort debitService;
 
-    private final CancelDebitMapper mapper;
+    public CancelDebitController(DebitServicePort debitService) {
+        this.debitService = debitService;
+    }
 
-    private final CancelDebitUseCase cancelDebit;
-
-    @PostMapping("/{id}/cancel")
-    public ResponseEntity<Void> cancelDebit(@PathVariable("id") String id, @RequestBody DebitCancellationDTO body) {
-        cancelDebit.cancel(mapper.toDomain(body, id));
+    @PostMapping("/cancel")
+    public ResponseEntity<Void> cancelDebit(@RequestBody DebitCancellationDTO body) {
+        debitService.cancel(body);
         return new ResponseEntity<>(HttpStatus.OK);
     }
 

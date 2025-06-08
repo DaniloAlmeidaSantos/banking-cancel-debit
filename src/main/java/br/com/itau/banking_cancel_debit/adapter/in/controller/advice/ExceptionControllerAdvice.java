@@ -1,6 +1,6 @@
 package br.com.itau.banking_cancel_debit.adapter.in.controller.advice;
 
-import br.com.itau.banking_cancel_debit.adapter.in.controller.dto.ErrorResponseDTO;
+import br.com.itau.banking_cancel_debit.common.dto.ErrorResponseDTO;
 import br.com.itau.banking_cancel_debit.infrastructure.exceptions.BusinessException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
