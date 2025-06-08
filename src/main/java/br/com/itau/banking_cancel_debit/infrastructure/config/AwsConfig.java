@@ -24,13 +24,16 @@ public class AwsConfig {
 
     @Bean
     public SqsClient amazonSQSClient() {
-        AwsBasicCredentials credentials = AwsBasicCredentials.create(accessKey, secretKey);
         return SqsClient.builder()
                 .region(Region.SA_EAST_1)
                 .endpointOverride(URI.create(awsEndpoint))
                 .credentialsProvider(
-                        StaticCredentialsProvider.create(credentials)
+                        StaticCredentialsProvider.create(this.getCredentials())
                 )
                 .build();
+    }
+
+    private AwsBasicCredentials getCredentials() {
+        return AwsBasicCredentials.create(accessKey, secretKey);
     }
 }

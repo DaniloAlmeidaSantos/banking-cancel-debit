@@ -13,3 +13,5 @@ aws:
   accessKey: ${AWS_ACCESS_KEY:test}
   secretKey: ${AWS_SECRET_KEY:test}
   awsEndpoint: ${AWS_ENDPOINT:http://localhost:4456}
+  sqs:
+    debitCancelQueueName: ${SQS_DEBIT_CANCEL_QUEUE_NAME:cancellation-queue}
