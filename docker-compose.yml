@@ -10,7 +10,7 @@ services:
       - AWS_DEFAULT_REGION=sa-east-1
       - AWS_ACCESS_KEY_ID=test
       - AWS_SECRET_ACCESS_KEY=test
-      - SERVICES=apigateway,sqs,s3,sts,iam
+      - SERVICES=apigateway,sqs,s3,sts,iam,dynamodb
       - DATA_DIR=${DATA_DIR-}
       - HOST_TMP_FOLDER=${TMPDIR:-/tmp/}localstack
       - DEBUG=1

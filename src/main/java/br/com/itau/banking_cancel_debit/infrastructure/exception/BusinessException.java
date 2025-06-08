@@ -1,8 +1,5 @@
-package br.com.itau.banking_cancel_debit.infrastructure.exceptions;
+package br.com.itau.banking_cancel_debit.infrastructure.exception;
 
-import lombok.Getter;
-
-@Getter
 public class BusinessException extends RuntimeException {
 
     public BusinessException(String message) {

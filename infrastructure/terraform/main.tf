@@ -8,7 +8,8 @@ provider "aws" {
 
     endpoints {
         sqs         = "http://localhost:4566"
-        apigateway  = "http://localhost:4566" 
+        apigateway  = "http://localhost:4566"
+        dynamodb    = "http://localhost:4566"
     }
 }
 
@@ -32,15 +33,15 @@ resource "aws_api_gateway_rest_api" "itau_case_gateway_rest_api" {
             version = "1.0"
         }
         paths = {
-           "/cancellation-debit/{id}" = {
+            "/debit/cancel" = {
                 post = {
                     x-amazon-apigateway-integration = {
                         httpMethod              = "POST"
                         type                    = "HTTP_PROXY"
-                        uri                     = "http://host.docker.internal:8080/banking-cancel-debit"
+                        uri                     = "http://host.docker.internal:8080/banking-cancel-debit/debit/cancel"
                     }
                 }
-           } 
+            }
         }
     })
 
@@ -68,7 +69,22 @@ resource "aws_api_gateway_deployment" "itau_case_gateway_deployment" {
 resource "aws_api_gateway_stage" "itau_case_gateway_stage" {
     deployment_id   = aws_api_gateway_deployment.itau_case_gateway_deployment.id
     rest_api_id     = aws_api_gateway_rest_api.itau_case_gateway_rest_api.id
-    stage_name      = "itau-case-gateway-stage" 
+    stage_name      = "itau-case-gateway-stage"
+
+    tags = {
+        Environment = "dev"
+    }
+}
+
+resource "aws_dynamodb_table" "itau_case_dynamo_table" {
+    name            = "Debits"
+    billing_mode    = "PAY_PER_REQUEST"
+    hash_key        = "id"
+
+    attribute  {
+        name = "id"
+        type = "S"
+    }
 
     tags = {
         Environment = "dev"

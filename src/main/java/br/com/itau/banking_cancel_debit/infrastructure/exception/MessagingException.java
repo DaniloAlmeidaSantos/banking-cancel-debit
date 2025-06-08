@@ -1,4 +1,4 @@
-package br.com.itau.banking_cancel_debit.infrastructure.exceptions;
+package br.com.itau.banking_cancel_debit.infrastructure.exception;
 
 public class MessagingException extends RuntimeException {
 

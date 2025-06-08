@@ -6,6 +6,7 @@ import org.springframework.context.annotation.Configuration;
 import software.amazon.awssdk.auth.credentials.AwsBasicCredentials;
 import software.amazon.awssdk.auth.credentials.StaticCredentialsProvider;
 import software.amazon.awssdk.regions.Region;
+import software.amazon.awssdk.services.dynamodb.DynamoDbClient;
 import software.amazon.awssdk.services.sqs.SqsClient;
 
 import java.net.URI;
@@ -25,6 +26,17 @@ public class AwsConfig {
     @Bean
     public SqsClient amazonSQSClient() {
         return SqsClient.builder()
+                .region(Region.SA_EAST_1)
+                .endpointOverride(URI.create(awsEndpoint))
+                .credentialsProvider(
+                        StaticCredentialsProvider.create(this.getCredentials())
+                )
+                .build();
+    }
+
+    @Bean
+    public DynamoDbClient dynamoDbClient() {
+        return DynamoDbClient.builder()
                 .region(Region.SA_EAST_1)
                 .endpointOverride(URI.create(awsEndpoint))
                 .credentialsProvider(

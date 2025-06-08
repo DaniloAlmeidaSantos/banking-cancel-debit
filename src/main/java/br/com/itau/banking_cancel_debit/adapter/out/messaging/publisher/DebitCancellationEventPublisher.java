@@ -1,8 +1,8 @@
 package br.com.itau.banking_cancel_debit.adapter.out.messaging.publisher;
 
-import br.com.itau.banking_cancel_debit.common.dto.CancelDebitEventDTO;
+import br.com.itau.banking_cancel_debit.domain.model.DebitCancelledEvent;
 import br.com.itau.banking_cancel_debit.domain.port.out.QueueEventPort;
-import br.com.itau.banking_cancel_debit.infrastructure.exceptions.MessagingException;
+import br.com.itau.banking_cancel_debit.infrastructure.exception.MessagingException;
 import com.google.gson.Gson;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -14,7 +14,7 @@ import software.amazon.awssdk.services.sqs.model.SqsException;
 
 @Slf4j
 @Service
-public class DebitCancellationEventPublisher implements QueueEventPort<CancelDebitEventDTO> {
+public class DebitCancellationEventPublisher implements QueueEventPort<DebitCancelledEvent> {
 
     @Value("${aws.sqs.debitCancelQueueName}")
     private String queueName;
@@ -28,7 +28,7 @@ public class DebitCancellationEventPublisher implements QueueEventPort<CancelDeb
     }
 
     @Override
-    public void publish(CancelDebitEventDTO message) {
+    public void publish(DebitCancelledEvent message) {
         try {
             String queueUrl = client.getQueueUrl(
                     GetQueueUrlRequest.builder()

@@ -10,12 +10,14 @@
 	</parent>
 	<groupId>br.com.itau</groupId>
 	<artifactId>banking-cancel-debit</artifactId>
-	<version>0.0.1-SNAPSHOT</version>
+	<version>1.0.0</version>
 	<name>banking-cancel-debit</name>
 	<description>Demo project for Spring Boot</description>
+
 	<properties>
 		<java.version>21</java.version>
 	</properties>
+
 	<dependencies>
 		<!-- Spring -->
 		<dependency>
@@ -38,6 +40,11 @@
 			<groupId>software.amazon.awssdk</groupId>
 			<artifactId>sqs</artifactId>
 			<version>2.31.58</version>
+		</dependency>
+		<dependency>
+			<groupId>software.amazon.awssdk</groupId>
+			<artifactId>dynamodb</artifactId>
+			<version>2.25.6</version>
 		</dependency>
 
 		<!-- Jakarta -->
@@ -74,10 +81,51 @@
 			<artifactId>mapstruct</artifactId>
 			<version>1.6.3</version>
 		</dependency>
+
+		<!-- OpenAPI -->
+<!--		<dependency>-->
+<!--			<groupId>org.springdoc</groupId>-->
+<!--			<artifactId>springdoc-openapi-starter-webmvc-ui</artifactId>-->
+<!--			<version>2.0.2</version>-->
+<!--		</dependency>-->
+<!--		<dependency>-->
+<!--			<groupId>org.openapitools</groupId>-->
+<!--			<artifactId>jackson-databind-nullable</artifactId>-->
+<!--			<version>0.2.6</version>-->
+<!--		</dependency>-->
 	</dependencies>
 
 	<build>
 		<plugins>
+<!--			<plugin>-->
+<!--				<groupId>org.openapitools</groupId>-->
+<!--				<artifactId>openapi-generator-maven-plugin</artifactId>-->
+<!--				<executions>-->
+<!--					<execution>-->
+<!--						<goals>-->
+<!--							<goal>generate</goal>-->
+<!--						</goals>-->
+<!--						<configuration>-->
+<!--							<inputSpec>-->
+<!--								${project.basedir}/src/main/resources/openapi.yml-->
+<!--							</inputSpec>-->
+<!--							<generatorName>spring</generatorName>-->
+<!--							<apiPackage>br.com.itau.banking_cancel_debit.api</apiPackage>-->
+<!--							<modelPackage>br.com.itau.banking_cancel_debit.model</modelPackage>-->
+<!--							<supportingFilesToGenerate>-->
+<!--								ApiUtil.java-->
+<!--							</supportingFilesToGenerate>-->
+<!--							<configOptions>-->
+<!--								<useSpringBoot3>true</useSpringBoot3>-->
+<!--								<delegatePattern>true</delegatePattern>-->
+<!--								<useJakartaEe>true</useJakartaEe>-->
+<!--								<useSwaggerAnnotations>false</useSwaggerAnnotations>-->
+<!--								<useBeanValidation>false</useBeanValidation>-->
+<!--							</configOptions>-->
+<!--						</configuration>-->
+<!--					</execution>-->
+<!--				</executions>-->
+<!--			</plugin>-->
 			<plugin>
 				<groupId>org.springframework.boot</groupId>
 				<artifactId>spring-boot-maven-plugin</artifactId>
