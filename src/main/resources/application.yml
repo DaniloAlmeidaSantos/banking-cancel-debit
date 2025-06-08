@@ -1,0 +1,15 @@
+spring:
+  main:
+    allow-bean-definition-overriding: true
+  application:
+    name: "banking-cancel-debit"
+
+server:
+  port: 8080
+  servlet:
+    context-path: /banking-cancel-debit
+
+aws:
+  accessKey: ${AWS_ACCESS_KEY:test}
+  secretKey: ${AWS_SECRET_KEY:test}
+  awsEndpoint: ${AWS_ENDPOINT:http://localhost:4456}
