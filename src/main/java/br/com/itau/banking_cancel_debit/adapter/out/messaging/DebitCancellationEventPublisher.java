@@ -1,6 +1,6 @@
-package br.com.itau.banking_cancel_debit.adapter.out.messaging.publisher;
+package br.com.itau.banking_cancel_debit.adapter.out.messaging;
 
-import br.com.itau.banking_cancel_debit.domain.model.DebitCancelledEvent;
+import br.com.itau.banking_cancel_debit.domain.model.event.DebitCancelledEvent;
 import br.com.itau.banking_cancel_debit.domain.port.out.QueueEventPort;
 import br.com.itau.banking_cancel_debit.infrastructure.exception.MessagingException;
 import com.google.gson.Gson;

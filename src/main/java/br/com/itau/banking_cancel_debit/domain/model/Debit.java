@@ -1,7 +1,12 @@
 package br.com.itau.banking_cancel_debit.domain.model;
 
+import br.com.itau.banking_cancel_debit.domain.model.command.CreateDebitCommand;
+import br.com.itau.banking_cancel_debit.infrastructure.exception.BusinessException;
+
 import java.time.Instant;
 import java.util.Date;
+import java.util.Objects;
+import java.util.UUID;
 
 public class Debit {
     private String id;
@@ -12,7 +17,8 @@ public class Debit {
     private Instant createdAt;
     private Instant updatedAt;
 
-    public Debit() {}
+    public Debit() {
+    }
 
     public Debit(String id, String userId, String status, Double amount, String description, Instant createdAt, Instant updatedAt) {
         this.id = id;
@@ -80,16 +86,35 @@ public class Debit {
         this.updatedAt = updatedAt;
     }
 
+    public boolean isOwnedBy(String userId) {
+        return Objects.equals(this.userId, userId);
+    }
+
+    public void cancel() {
+        if (DebitStatusEnum.CANCELLED.isCancelled(this.status)) {
+            throw new BusinessException("Debit already cancelled.");
+        }
+
+        this.status = DebitStatusEnum.CANCELLED.name();
+        this.updatedAt = Instant.now();
+    }
+
+    public static Debit createFrom(CreateDebitCommand command) {
+        Instant now = Instant.now();
+        return new Debit(
+                UUID.randomUUID().toString(),
+                command.userId(),
+                DebitStatusEnum.ACTIVE.name(),
+                command.amount(),
+                command.description(),
+                now,
+                now
+        );
+    }
+
     @Override
     public String toString() {
-        return "Debit{" +
-                "id='" + id + '\'' +
-                ", userId='" + userId + '\'' +
-                ", status='" + status + '\'' +
-                ", amount=" + amount +
-                ", description='" + description + '\'' +
-                ", createdAt=" + createdAt +
-                ", updatedAt=" + updatedAt +
-                '}';
+        return String.format("Debit{id='%s', userId='%s', status='%s', amount=%.2f, description='%s'}",
+                id, userId, status, amount, description);
     }
 }

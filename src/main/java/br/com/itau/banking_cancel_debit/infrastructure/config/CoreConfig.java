@@ -1,6 +1,6 @@
 package br.com.itau.banking_cancel_debit.infrastructure.config;
 
-import br.com.itau.banking_cancel_debit.domain.model.DebitCancelledEvent;
+import br.com.itau.banking_cancel_debit.domain.model.event.DebitCancelledEvent;
 import br.com.itau.banking_cancel_debit.domain.port.in.DebitServicePort;
 import br.com.itau.banking_cancel_debit.domain.port.out.DebitRepositoryPort;
 import br.com.itau.banking_cancel_debit.domain.port.out.QueueEventPort;

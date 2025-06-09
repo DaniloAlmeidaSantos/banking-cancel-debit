@@ -1,21 +1,13 @@
 package br.com.itau.banking_cancel_debit.domain.service;
 
-import br.com.itau.banking_cancel_debit.adapter.in.controller.dto.CreateDebitRequestDTO;
-import br.com.itau.banking_cancel_debit.adapter.in.controller.dto.CreateDebitResponseDTO;
 import br.com.itau.banking_cancel_debit.domain.model.Debit;
-import br.com.itau.banking_cancel_debit.domain.model.DebitCancelledEvent;
-import br.com.itau.banking_cancel_debit.adapter.in.controller.dto.CancelDebitRequestDTO;
-import br.com.itau.banking_cancel_debit.domain.model.DebitStatusEnum;
+import br.com.itau.banking_cancel_debit.domain.model.command.CancelDebitCommand;
+import br.com.itau.banking_cancel_debit.domain.model.command.CreateDebitCommand;
+import br.com.itau.banking_cancel_debit.domain.model.event.DebitCancelledEvent;
 import br.com.itau.banking_cancel_debit.domain.port.in.DebitServicePort;
 import br.com.itau.banking_cancel_debit.domain.port.out.DebitRepositoryPort;
 import br.com.itau.banking_cancel_debit.domain.port.out.QueueEventPort;
 import br.com.itau.banking_cancel_debit.infrastructure.exception.BusinessException;
-
-import java.time.Clock;
-import java.time.Instant;
-import java.util.Date;
-import java.util.Objects;
-import java.util.UUID;
 
 public class DebitService implements DebitServicePort {
 
@@ -30,58 +22,36 @@ public class DebitService implements DebitServicePort {
     }
 
     @Override
-    public void cancel(CancelDebitRequestDTO request) {
-        Debit debit = getAndValidateDebit(request.debitId(), request.requestedBy());
-        debit.setStatus(DebitStatusEnum.CANCELLED.name());
-        debit.setUpdatedAt(Instant.now());
+    public void cancel(CancelDebitCommand request) {
+        Debit debit = this.findDebit(request.debitId());
 
-        DebitCancelledEvent event = buildNewEvent(request);
+        if (!debit.isOwnedBy(request.requestedBy()))
+            throw new BusinessException("User does not have permission to cancel this debit.");
 
-        repository.save(debit);
-        queueEvent.publish(event);
+        debit.cancel();
+        boolean isSaved = repository.save(debit);
+
+        if (!isSaved)
+            throw new BusinessException("Failed to persist data. Request was not dispatched.");
+
+        queueEvent.publish(DebitCancelledEvent.createEvent(debit, request));
     }
 
     @Override
-    public CreateDebitResponseDTO create(CreateDebitRequestDTO request) {
-        Debit debit = buildNewDebit(request);
-        repository.save(debit);
-        return new CreateDebitResponseDTO(debit.getId(), debit.getStatus());
+    public Debit create(CreateDebitCommand request) {
+        Debit debit = Debit.createFrom(request);
+        boolean isSaved = repository.save(debit);
+
+        if (!isSaved) throw new BusinessException("Failed to persist data. Debit was not created.");
+
+        return debit;
     }
 
-    private DebitCancelledEvent buildNewEvent(CancelDebitRequestDTO request) {
-        return new DebitCancelledEvent(
-                "DEBIT_CANCELLATION",
-                request.debitId(),
-                Instant.now().toString(),
-                request.reason(),
-                request.requestedBy(),
-                UUID.randomUUID().toString()
-        );
-    }
-
-    private Debit buildNewDebit(CreateDebitRequestDTO request) {
-        return new Debit(
-                UUID.randomUUID().toString(),
-                request.userId(),
-                DebitStatusEnum.ACTIVE.name(),
-                request.amount(),
-                request.description(),
-                Instant.now(),
-                Instant.now()
-        );
-    }
-
-    private Debit getAndValidateDebit(String debitId, String requestedBy) {
+    private Debit findDebit(String debitId) {
         Debit debit = repository.findById(debitId);
 
         if (debit == null)
             throw new BusinessException("Debit not found");
-
-        if (!Objects.equals(debit.getUserId(), requestedBy))
-            throw new BusinessException("User no have permission to cancel this debit.");
-
-        if (DebitStatusEnum.CANCELLED.isCancelled(debit.getStatus()))
-            throw new BusinessException("Debit already cancelled");
 
         return debit;
     }
