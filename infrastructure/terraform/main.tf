@@ -42,6 +42,15 @@ resource "aws_api_gateway_rest_api" "itau_case_gateway_rest_api" {
                     }
                 }
             }
+            "/debit" = {
+                post = {
+                    x-amazon-apigateway-integration = {
+                        httpMethod              = "POST"
+                        type                    = "HTTP_PROXY"
+                        uri                     = "http://host.docker.internal:8080/banking-cancel-debit/debit"
+                    }
+                }
+            }
         }
     })
 
