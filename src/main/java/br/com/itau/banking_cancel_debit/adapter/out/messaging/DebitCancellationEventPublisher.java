@@ -8,10 +8,9 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import software.amazon.awssdk.services.sqs.SqsClient;
-import software.amazon.awssdk.services.sqs.model.GetQueueUrlRequest;
-import software.amazon.awssdk.services.sqs.model.SendMessageRequest;
-import software.amazon.awssdk.services.sqs.model.SendMessageResponse;
-import software.amazon.awssdk.services.sqs.model.SqsException;
+import software.amazon.awssdk.services.sqs.model.*;
+
+import java.util.Map;
 
 @Slf4j
 @Service
@@ -42,6 +41,12 @@ public class DebitCancellationEventPublisher implements QueueEventPort<DebitCanc
             SendMessageResponse response = client.sendMessage(
                     SendMessageRequest.builder()
                             .queueUrl(queueUrl)
+                            .messageAttributes(Map.of(
+                                    "correlationId", MessageAttributeValue.builder()
+                                            .stringValue(message.correlationId())
+                                            .dataType("String")
+                                            .build()
+                            ))
                             .messageBody(payload)
                             .build()
             );
@@ -55,6 +60,7 @@ public class DebitCancellationEventPublisher implements QueueEventPort<DebitCanc
                 );
             }
 
+            log.info("Message successfully send to SQS: [{}]", payload);
         } catch (SqsException ex) {
             log.error("Error on sending message to {}: {}", queueName, ex.getMessage());
             throw new MessagingException("Message not processed.", ex.getCause());

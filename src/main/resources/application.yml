@@ -13,7 +13,3 @@ aws:
   awsEndpoint: ${AWS_ENDPOINT:http://localhost:4566}
   sqs:
     debitCancelQueueName: ${SQS_DEBIT_CANCEL_QUEUE_NAME:cancellation-queue}
-
-springdoc:
-  api-docs:
-    enabled: true

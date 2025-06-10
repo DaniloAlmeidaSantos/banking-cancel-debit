@@ -16,6 +16,8 @@ import software.amazon.awssdk.http.SdkHttpResponse;
 import software.amazon.awssdk.services.sqs.SqsClient;
 import software.amazon.awssdk.services.sqs.model.*;
 
+import java.util.Map;
+
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.mockito.Mockito.*;
@@ -57,6 +59,12 @@ public class DebitCancellationEventPublisherTest {
         SendMessageRequest sendMessageRequest = SendMessageRequest.builder()
                 .queueUrl(queueUrl)
                 .messageBody(json)
+                .messageAttributes(Map.of(
+                        "correlationId", MessageAttributeValue.builder()
+                                .stringValue("correlationId")
+                                .dataType("String")
+                                .build()
+                ))
                 .build();
 
         SendMessageResponse sendMessageResponse = (SendMessageResponse) SendMessageResponse.builder()
@@ -94,6 +102,12 @@ public class DebitCancellationEventPublisherTest {
         SendMessageRequest sendMessageRequest = SendMessageRequest.builder()
                 .queueUrl(queueUrl)
                 .messageBody(json)
+                .messageAttributes(Map.of(
+                        "correlationId", MessageAttributeValue.builder()
+                                .stringValue("correlationId")
+                                .dataType("String")
+                                .build()
+                ))
                 .build();
 
         when(sqsClient.getQueueUrl(request)).thenReturn(response);
@@ -133,6 +147,12 @@ public class DebitCancellationEventPublisherTest {
         SendMessageRequest sendMessageRequest = SendMessageRequest.builder()
                 .queueUrl(queueUrl)
                 .messageBody(json)
+                .messageAttributes(Map.of(
+                        "correlationId", MessageAttributeValue.builder()
+                                .stringValue("correlationId")
+                                .dataType("String")
+                                .build()
+                ))
                 .build();
 
         SendMessageResponse sendMessageResponse = (SendMessageResponse) SendMessageResponse.builder()

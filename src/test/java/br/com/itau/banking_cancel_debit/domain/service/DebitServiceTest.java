@@ -38,8 +38,9 @@ public class DebitServiceTest {
         // Arrange
         String debitId = "debitId";
         String userID = "userId";
+        String correlationId = "correlationId";
         Debit debit = getDebit(debitId, userID, DebitStatusEnum.CANCELLED.name());
-        CancelDebitCommand command = new CancelDebitCommand(debitId, "reason", userID);
+        CancelDebitCommand command = new CancelDebitCommand(debitId, "reason", userID, correlationId);
 
         when(repositoryPort.findById(debitId)).thenReturn(debit);
         when(repositoryPort.save(debit)).thenReturn(true);
@@ -59,8 +60,9 @@ public class DebitServiceTest {
         // Arrange
         String debitId = "debitId";
         String userID = "userId";
+        String correlationId = "correlationId";
         Debit debit = getDebit(debitId, "incorrectUser", DebitStatusEnum.CANCELLED.name());
-        CancelDebitCommand command = new CancelDebitCommand(debitId, "reason", userID);
+        CancelDebitCommand command = new CancelDebitCommand(debitId, "reason", userID, correlationId);
 
         when(repositoryPort.findById(debitId)).thenReturn(debit);
 
@@ -81,8 +83,9 @@ public class DebitServiceTest {
         // Arrange
         String debitId = "debitId";
         String userID = "userId";
+        String correlationId = "correlationId";
         Debit debit = getDebit(debitId, userID, DebitStatusEnum.CANCELLED.name());
-        CancelDebitCommand command = new CancelDebitCommand(debitId, "reason", userID);
+        CancelDebitCommand command = new CancelDebitCommand(debitId, "reason", userID, correlationId);
 
         when(repositoryPort.findById(debitId)).thenReturn(debit);
         when(repositoryPort.save(debit)).thenReturn(false);
@@ -105,7 +108,8 @@ public class DebitServiceTest {
         // Arrange
         String debitId = "debitId";
         String userID = "userId";
-        CancelDebitCommand command = new CancelDebitCommand(debitId, "reason", userID);
+        String correlationId = "correlationId";
+        CancelDebitCommand command = new CancelDebitCommand(debitId, "reason", userID, correlationId);
 
         when(repositoryPort.findById(debitId)).thenReturn(null);
 

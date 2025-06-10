@@ -71,7 +71,7 @@ Projeto focado no cancelamento de débitos bancários, também permitindo a cria
 
 - **Criar débito**
     - `POST /debits`
-    - Body exemplo:
+    - Body exemplo **(Obrigatório)**: 
       ```json
       {
         "accountId": "12345",
@@ -91,7 +91,10 @@ Projeto focado no cancelamento de débitos bancários, também permitindo a cria
 
 - **Cancelar débito**
     - `POST /debit/cancel`
-    - Body exemplo:
+    - Header **(Opcional)**:
+       - `X-Correlation-Id: <UUID>`
+       - Recomendado para tracking da mensagem no SQS.
+    - Body exemplo **(Obrigatório)**:
       ```json
       {
         "debitId": "12345",
@@ -99,6 +102,9 @@ Projeto focado no cancelamento de débitos bancários, também permitindo a cria
         "requestedBy": "id do cliente"
       }
       ```
+      
+> ⚠️ Observação: O header X-Correlation-Id é opcional, mas altamente recomendado para rastreamento da requisição durante o fluxo da mensagem. Caso não seja fornecido, a aplicação irá gerar um novo UUID automaticamente e retorná-lo no header X-Correlation-Id da resposta. 
+
 
 ## Estrutura do Projeto
 

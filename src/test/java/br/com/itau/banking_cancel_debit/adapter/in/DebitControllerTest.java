@@ -57,19 +57,21 @@ public class DebitControllerTest {
     @Test
     public void shouldCancelDebit() {
         // Arrange
+        String correlationId = "correlationId";
         CancelDebitRequestDTO body = new CancelDebitRequestDTO(
                 "debitId",
                 "userId",
                 "Generic"
         );
-        var request = new CancelDebitCommand(body.debitId(), body.reason(), body.requestedBy());
+        var request = new CancelDebitCommand(body.debitId(), body.reason(), body.requestedBy(), correlationId);
 
         doNothing().when(debitServicePort).cancel(request);
 
         // Act
-        var result = suite.cancelDebit(body);
+        var result = suite.cancelDebit(body, correlationId);
 
         // Assert
+        assertEquals(correlationId, result.getHeaders().get("X-Correlation-Id").get(0));
         assertEquals(200, result.getStatusCode().value());
         verify(debitServicePort, times(1)).cancel(any());
     }
