@@ -30,13 +30,15 @@ public class ExceptionControllerHandler {
 
     @ExceptionHandler({MessagingException.class, PersistenceException.class})
     public ResponseEntity<ErrorDetails> handleAdapterOutboundException(final MessagingException ex) {
+        String cause = ex.getCause().toString().isEmpty() ?
+                "ADAPTER_ERROR" : ex.getCause().toString();
         return ResponseEntity
                 .status(HttpStatus.INTERNAL_SERVER_ERROR)
                 .body(
                         new ErrorDetails(
                                 Instant.now().toString(),
                                 HttpStatus.INTERNAL_SERVER_ERROR.value(),
-                                ex.getCause().toString(),
+                                cause,
                                 ex.getMessage()
                         )
                 );

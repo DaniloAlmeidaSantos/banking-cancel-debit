@@ -10,6 +10,7 @@ import org.springframework.stereotype.Service;
 import software.amazon.awssdk.services.sqs.SqsClient;
 import software.amazon.awssdk.services.sqs.model.GetQueueUrlRequest;
 import software.amazon.awssdk.services.sqs.model.SendMessageRequest;
+import software.amazon.awssdk.services.sqs.model.SendMessageResponse;
 import software.amazon.awssdk.services.sqs.model.SqsException;
 
 @Slf4j
@@ -36,12 +37,24 @@ public class DebitCancellationEventPublisher implements QueueEventPort<DebitCanc
                             .build()
             ).queueUrl();
 
-            client.sendMessage(
+            String payload = gson.toJson(message);
+
+            SendMessageResponse response = client.sendMessage(
                     SendMessageRequest.builder()
                             .queueUrl(queueUrl)
-                            .messageBody(gson.toJson(message))
+                            .messageBody(payload)
                             .build()
             );
+
+            if (!response.sdkHttpResponse().isSuccessful()) {
+                log.warn("Failed to send message to SQS [{}]: {}", payload, response.sdkHttpResponse().statusText());
+                throw new MessagingException(
+                        String.format(
+                                "Failed to send message %s to SQS: %s", payload, response.sdkHttpResponse().statusText()
+                        )
+                );
+            }
+
         } catch (SqsException ex) {
             log.error("Error on sending message to {}: {}", queueName, ex.getMessage());
             throw new MessagingException("Message not processed.", ex.getCause());

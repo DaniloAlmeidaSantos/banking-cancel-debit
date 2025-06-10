@@ -12,11 +12,9 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.test.util.ReflectionTestUtils;
+import software.amazon.awssdk.http.SdkHttpResponse;
 import software.amazon.awssdk.services.sqs.SqsClient;
-import software.amazon.awssdk.services.sqs.model.GetQueueUrlRequest;
-import software.amazon.awssdk.services.sqs.model.GetQueueUrlResponse;
-import software.amazon.awssdk.services.sqs.model.SendMessageRequest;
-import software.amazon.awssdk.services.sqs.model.SqsException;
+import software.amazon.awssdk.services.sqs.model.*;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
@@ -61,9 +59,13 @@ public class DebitCancellationEventPublisherTest {
                 .messageBody(json)
                 .build();
 
+        SendMessageResponse sendMessageResponse = (SendMessageResponse) SendMessageResponse.builder()
+                .sdkHttpResponse(SdkHttpResponse.builder().statusCode(200).build())
+                .build();
+
         when(sqsClient.getQueueUrl(request)).thenReturn(response);
         when(gson.toJson(eventPayload)).thenReturn(json);
-        when(sqsClient.sendMessage(sendMessageRequest)).thenReturn(any());
+        when(sqsClient.sendMessage(sendMessageRequest)).thenReturn(sendMessageResponse);
 
         // Act
         suite.publish(eventPayload);
@@ -108,6 +110,47 @@ public class DebitCancellationEventPublisherTest {
         // Assert
         assertNotNull(result);
         assertEquals("Message not processed.", result.getMessage());
+        verify(gson, times(1)).toJson(any(DebitCancelledEvent.class));
+        verify(sqsClient, times(1)).sendMessage(any(SendMessageRequest.class));
+        verify(sqsClient, times(1)).getQueueUrl(any(GetQueueUrlRequest.class));
+    }
+
+    @Test
+    public void shouldThrowsMessagingExceptionWhenSqsApiReturnError() {
+        // Arrange
+        String queueUrl = "queueUrl";
+        String json = "{json}";
+
+        DebitCancelledEvent eventPayload = getEventPayload();
+
+        GetQueueUrlRequest request = GetQueueUrlRequest.builder()
+                .queueName(QUEUE_NAME)
+                .build();
+        GetQueueUrlResponse response = GetQueueUrlResponse.builder()
+                .queueUrl(queueUrl)
+                .build();
+
+        SendMessageRequest sendMessageRequest = SendMessageRequest.builder()
+                .queueUrl(queueUrl)
+                .messageBody(json)
+                .build();
+
+        SendMessageResponse sendMessageResponse = (SendMessageResponse) SendMessageResponse.builder()
+                .sdkHttpResponse(SdkHttpResponse.builder().statusCode(400).build())
+                .build();
+
+        when(sqsClient.getQueueUrl(request)).thenReturn(response);
+        when(gson.toJson(eventPayload)).thenReturn(json);
+        when(sqsClient.sendMessage(sendMessageRequest)).thenReturn(sendMessageResponse);
+
+        // Act
+        var result = Assertions.assertThrows(
+                MessagingException.class,
+                () ->  suite.publish(eventPayload)
+        );
+
+        // Assert
+        assertNotNull(result);
         verify(gson, times(1)).toJson(any(DebitCancelledEvent.class));
         verify(sqsClient, times(1)).sendMessage(any(SendMessageRequest.class));
         verify(sqsClient, times(1)).getQueueUrl(any(GetQueueUrlRequest.class));
