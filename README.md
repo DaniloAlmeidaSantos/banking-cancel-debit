@@ -51,7 +51,7 @@ Projeto focado no cancelamento de débitos bancários, também permitindo a cria
 3. **Provisione os recursos via Terraform**
     - Vá até o diretório .\infrastructure\terraform como comando:
     ```bash
-    cd /infrastructure/terraform
+    cd .\infrastructure\terraform
     ```
    - Em seguida rode os seguintes comandos:
    ```bash
