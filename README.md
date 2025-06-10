@@ -97,7 +97,7 @@ Projeto focado no cancelamento de débitos bancários, também permitindo a cria
     - Body exemplo **(Obrigatório)**:
       ```json
       {
-        "debitId": "12345",
+        "debitId": "64c8b988-8667-4092-9250-693978c81146",
         "reason": "Desistência",
         "requestedBy": "id do cliente"
       }
